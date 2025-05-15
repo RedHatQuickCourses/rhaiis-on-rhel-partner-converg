@@ -1,149 +1,104 @@
-= Building an Application with rpms
+= Using Red Hat AI Inference Server
 
-== Downloading the UBI
+In this lab, you will be using Red Hat AI Inference Server, running in a container on RHEL 9.5 and serving the Llama-3-Groq-8B model.
+In order to get it the inference server running you need to pull its iamge from the registry and tehn create and run a container wit that imag. To save you time, the image that will be used in the container has been pre-pulled and it is already available in your RHEL host, that has an NVIDIA L4 GPU with 24Gb of memory. As we said in the introduction, Red Hat AI Inference Server can use many other accelerators. The container as well has been created and it is running in the host.
 
-In this lab, you will be installing software into the container 
-image running as an interactive application. To do this you will
-need `yum`, but do not need `systemd` for managing services within the
-container environment.  For that reason, you will be using the *Standard*
-UBI image (as opposed to the Minimal or Multi-service images).
 
-Using the "buildah from" command will download and meld the container image. This particular image we are using is the Red Hat Universal Base Image or UBI. From the ourput of the command, you will notice that we are pulling down the latest one, which is for RHEL 9. 
+== Monitor GPU utilization
 
-. Execute the  download the Standard UBI
-image from Red Hat's registry.
-
-+
-[source,sh,role=execute]
-----
-buildah from registry.access.redhat.com/ubi9/ubi
-----
-
-[#repositories]
-== Installing Repositories
-In this lab, you are going to containerize a software package that is already
-packaged in RPM format and stored in the Extra Packages for Enterprise Linux
-(EPEL) repository.
-
-Software often has requirements for prerequisite software that must be installed
-on the machine for it to work properly.  `yum` will resolve those
-dependencies for you, as long as it can locate the required packages in
-repositories defined on the machine.  The Red Hat Universal Base Image (UBI)
-downloaded in the previous step has access to some Red Hat Enterprise Linux
-repositories.  However, the target package for the lab is from EPEL.  
-
-. In the command below, `buildah` is going to run a command on the
-`ubi-working-container` image.  The `--` indicates that the command should be
-executed from within the container, which means the results will be applied into
-the container image.  Lastly, you are providing the `yum` command to install a
-package that defines all of the repositories from EPEL, `epel-release-latest-9`.
+In one of the terminals we are going to check the GPU utilization by typing this command:
 
 +
 [source,bash]
 ----
-buildah run ubi-working-container -- yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+nvtop
 ----
++ 
+NOTE: Initially the GPU utilization is 0 as there is no load in it.
 
 
-. You can verify that the above command did not install the RPM on the host system.
+== Query Red Hat AI Inference Server
+
+In the other terminal we will submit a query using the *curl* command:
+
 
 +
 [source,bash]
 ----
-rpm -q epel-release
+curl -X POST http://{url}:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "Groq/Llama-3-Groq-8B-Tool-Use",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Write me 10 to 15 paragraphs about RHEL"
+      }
+    ],
+    "temperature": 0.7,
+    "max_tokens": 5000
+  }' | jq
+
 ----
++
 
-NOTE: If your repository configurations are not distributed as an RPM, but instead as
-individual `.repo` files, you could use the `buildah copy` command to copy
-files from the host operating system into the container image.  You will see
-an example of using `buildah copy` later in this lab.
+Look at the termial where the GPU monitor is running and you will see how its resources are being used until the response is displayed.
 
-[#software]
-== Installing Software
+=== Using OpenAPI
 
+In this section we will use OpenAI API to query Red Hat AI Inference Server, which is really useful if we want applications to communicate with it. OpenAI API has become a standard as it  supports stateful interactions, function calling, and integration with external tools and data, making it a powerful resource for building intelligent applications.
 
-. Now that the yum repositories are defined within the container, execute 
-another `yum install`, within the container, to install the target
-software: `moon-buggy`.
+We will create a Python script that will submit the query to the Red Hat AI Inference Server. But before we need to install the OpenAI library.
 
 +
 [source,bash]
 ----
-buildah run ubi-working-container -- yum -y install moon-buggy
+pip install openai
 ----
++ 
 
-
-== Committing the Container Image
-
-. At this point, the container is configured.  It is time to transition from a
-working container into a committed image.  In the command below, you will use
-the `buildah` command to commit the working container to an image called:
-`moon-buggy`.
+Now let's create the script using the *vim* editor.
 
 +
 [source,bash]
 ----
-buildah commit ubi-working-container moon-buggy
+vim api.py
 ----
++ 
 
-+
-. The output of `podman image list` should confirm the image was created.
+Once inside the *vim* editor press '*i*' to enter edit mode and paste this code snippet:
 
-+
-[source,bash]
-----
-podman image list
-----
-
-
-== Deploy the Container
-
-Now the software has been installed and a new container image created.  It is
-time to spawn a runtime of the container image and validate the software.  The
-software we are using is a command line command.  
-
-. When you `run` the container,
-it will be in interactive (`-it`) mode, based on the `moon-buggy` container
-image and the command run interactively will be `/usr/bin/moon-buggy`.
 
 +
 [source,bash]
 ----
-podman run -it moon-buggy /usr/bin/moon-buggy
-----
+from openai import OpenAI
 
+api_key = "llamastack"
+
+
+
+model = "Groq/Llama-3-Groq-8B-Tool-Use"
+base_url = "http://{url}:8000/v1/"
+
+
+client = OpenAI(
+    base_url=base_url,
+    api_key=api_key,
+)
+
+response = client.chat.completions.create(
+    model=model,
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Why is Red Hat AI Inference Server a great fit for RHEL?"}
+    ]
+)
+print(response.choices[0].message.content)
+
+----
 +
-[source,textinfo]
-----
 
-<<< OUTPUT ABRIDGED >>>
-               MM     MM   OOOOO    OOOOO   NN     N
-               M M   M M  O     O  O     O  N N    N
-               M  M M  M  O     O  O     O  N  N   N
-               M   M   M  O     O  O     O  N   N  N
-               M       M  O     O  O     O  N    N N
-               M       M   OOOOO    OOOOO   N     NN
+Again we can see in the GPU monitor how its resources are being utilized until the response is returned.
 
-                     BBBBBB   U     U   GGGGG    GGGGG   Y     Y
-                     B     B  U     U  G     G  G     G   Y   Y
-                     BBBBBB   U     U  G        G          Y Y
-                     B     B  U     U  G   GGG  G   GGG     Y
-                     B     B  U     U  G     G  G     G    Y
-                     BBBBBB    UUUUU    GGGGG    GGGGG   YY
-
-<<< OUTPUT ABRIDGED >>>
-----
-
-. You can now play the Moon Buggy game, which is a text-based version of the
-popular Moon Patrol.  When you are finished, use the `q` command to quit the
-game, which will terminate the container.
-
-+
-Alternatively, you can use `podman` to kill the running container from
-*Terminal 2*.
-
-+
-[source,bash]
-----
-podman kill $(podman ps | grep -v CONTAINER | cut -f1 -d" " )
-----
+You can experiment with different queries by just modifying the question in both the Python script or the *curl* command.
