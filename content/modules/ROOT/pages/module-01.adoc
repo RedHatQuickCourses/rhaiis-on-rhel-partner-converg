@@ -25,7 +25,7 @@ In the other terminal we will submit a query using the *curl* command:
 +
 [source,bash]
 ----
-curl -X POST http://{openshift_cnv_ssh_address}:8000/v1/chat/completions \
+curl -X POST http://localhost:8000/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "Groq/Llama-3-Groq-8B-Tool-Use",
@@ -79,7 +79,7 @@ api_key = "llamastack"
 
 
 model = "Groq/Llama-3-Groq-8B-Tool-Use"
-base_url = "http://{openshift_cnv_ssh_address}:8000/v1/"
+base_url = "http://localhost:8000/v1/"
 
 
 client = OpenAI(
