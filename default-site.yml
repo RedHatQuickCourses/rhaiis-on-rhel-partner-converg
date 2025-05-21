@@ -1,7 +1,7 @@
 ---
 site:
   title: Red Hat AI Inference Server Demo
-  start_page: modules::index.adoc
+  start_page: modules::intro.adoc
 
 content:
   sources:
@@ -11,8 +11,6 @@ content:
 ui:
   bundle:
     url: https://github.com/rhpds/rhdp_showroom_theme/releases/download/v0.0.1/ui-bundle.zip
-    # Themes can be found at https://github.com/rhpds/rhdp_showroom_theme
-    # Summit 2025 url: https://github.com/rhpds/rhdp_showroom_theme/releases/download/rh-summit-2025/ui-bundle.zip
     snapshot: true
   supplemental_files:
     - path: ./content/supplemental-ui
