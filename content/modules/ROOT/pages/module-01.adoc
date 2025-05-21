@@ -1,7 +1,7 @@
 = Using Red Hat AI Inference Server
 
 In this lab, you will be using Red Hat AI Inference Server, running in a container on RHEL 9.5 and serving the Llama-3-Groq-8B model.
-In order to get it the inference server running you would need to pull its image from the registry and then create and run a container with that image.
+In order to get the inference server running you would need to pull its image from the registry and then create and run a container with that image.
 
 To save you time, the image that will be used in the container has been pre-pulled and is already available in your RHEL host.
 The RHEL server has, by default, an NVIDIA L4 GPU with 24Gb of memory. 
@@ -43,9 +43,9 @@ curl -X POST http://localhost:8000/v1/chat/completions \
 
 Look at the termial where the GPU monitor is running and you will see how its resources are being used until the response is displayed.
 
-Try a few more queries by adjusing the content in the API call above and see how the GPU resources are used.
+Try a few more queries by adjusting the content in the API call above and see how the GPU resources are used.
 
-=== Using OpenAPI
+=== Using OpenAI API
 
 Now, you will use OpenAI API to query Red Hat AI Inference Server.
 This is really useful if we want applications to be able to communicate with it. 
@@ -58,8 +58,10 @@ We will create a Python script that will submit the query to the Red Hat AI Infe
 pip install openai
 ----
 
-As you can see in the simple script below, it is doing TODO.
-It is using the API key to authenticate to the TODO
+As you can see in the simple script below, it is creating a client that asks our model why Red Hat AI Inference Server is good for RHEL.
+
+You will need to generate an API key so that the script can use OpenAI API. Follow https://www.guidingtech.com/how-to-generate-openai-api-key/[these instructions]
+[this document] to generate your key, then substitute '<your_api_key>' in the script with its value.
 
 [source,yaml,role=execute,subs=attributes+]
 ----
@@ -73,7 +75,7 @@ base_url = "http://localhost:8000/v1/"
 
 client = OpenAI(
     base_url=base_url,
-    api_key=api_key,
+    api_key=<your_api_key>,
 )
 
 response = client.chat.completions.create(
