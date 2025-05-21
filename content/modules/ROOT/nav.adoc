@@ -1,4 +1,2 @@
-* xref:pages/intro.adoc[1. Introduction]
-
-* xref:pages/module-01.adoc[2. Using Red Hat AI Inference Server]
-
+* xref:intro.adoc[1. Introduction]
+* xref:module-01.adoc[2. Using Red Hat AI Inference Server]
