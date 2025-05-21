@@ -91,4 +91,4 @@ EOF
 
 Once again, you can see in the GPU monitor how its resources are being utilized until the response is returned.
 
-Try a few more queries by adjusing the content in the Python script or the *curl* command to see how the GPU resources are used.
+Try a few more queries by adjusing the content in the Python script or the *curl* command to see how the GPU resources are used and the accuracy of the responses.
