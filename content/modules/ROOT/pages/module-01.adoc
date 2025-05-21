@@ -1,29 +1,30 @@
 = Using Red Hat AI Inference Server
 
 In this lab, you will be using Red Hat AI Inference Server, running in a container on RHEL 9.5 and serving the Llama-3-Groq-8B model.
-In order to get it the inference server running you need to pull its iamge from the registry and tehn create and run a container wit that imag. To save you time, the image that will be used in the container has been pre-pulled and it is already available in your RHEL host, that has an NVIDIA L4 GPU with 24Gb of memory. As we said in the introduction, Red Hat AI Inference Server can use many other accelerators. The container as well has been created and it is running in the host.
+In order to get it the inference server running you would need to pull its image from the registry and then create and run a container with that image.
+
+To save you time, the image that will be used in the container has been pre-pulled and is already available in your RHEL host.
+The RHEL server has, by default, an NVIDIA L4 GPU with 24Gb of memory. 
+As we said in the introduction, Red Hat AI Inference Server can use many other accelerators. 
+The RHAIIS container has been created and it is already running on the host.
 
 
 == Monitor GPU utilization
 
-In one of the terminals we are going to check the GPU utilization by typing this command:
+In the terminal on top, check the GPU utilization by typing this command:
 
-+
-[source,bash]
+[source,yaml,role=execute,subs=attributes+]
 ----
 nvtop
 ----
-+ 
+ 
 NOTE: Initially the GPU utilization is 0 as there is no load in it.
-
 
 == Query Red Hat AI Inference Server
 
-In the other terminal we will submit a query using the *curl* command:
+In the bottom terminal, submit this query using the *curl* command:
 
-
-+
-[source,bash]
+[source,yaml,role=execute,subs=attributes+]
 ----
 curl -X POST http://localhost:8000/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -38,49 +39,37 @@ curl -X POST http://localhost:8000/v1/chat/completions \
     "temperature": 0.7,
     "max_tokens": 5000
   }' | jq
-
 ----
-+
 
 Look at the termial where the GPU monitor is running and you will see how its resources are being used until the response is displayed.
 
+Try a few more queries by adjusing the content in the API call above and see how the GPU resources are used.
+
 === Using OpenAPI
 
-In this section we will use OpenAI API to query Red Hat AI Inference Server, which is really useful if we want applications to communicate with it. OpenAI API has become a standard as it  supports stateful interactions, function calling, and integration with external tools and data, making it a powerful resource for building intelligent applications.
+Now, you will use OpenAI API to query Red Hat AI Inference Server.
+This is really useful if we want applications to be able to communicate with it. 
+OpenAI API has become a standard as it supports stateful interactions, function calling, and integration with external tools and data, making it a powerful resource for building intelligent applications.
 
 We will create a Python script that will submit the query to the Red Hat AI Inference Server. But before we need to install the OpenAI library.
 
-+
-[source,bash]
+[source,yaml,role=execute,subs=attributes+]
 ----
 pip install openai
 ----
-+ 
 
-Now let's create the script using the *vim* editor.
+As you can see in the simple script below, it is doing TODO.
+It is using the API key to authenticate to the TODO
 
-+
-[source,bash]
+[source,yaml,role=execute,subs=attributes+]
 ----
-vim api.py
-----
-+ 
-
-Once inside the *vim* editor press '*i*' to enter edit mode and paste this code snippet:
-
-
-+
-[source,bash]
-----
+cat << 'EOF' > api.py
 from openai import OpenAI
 
 api_key = "llamastack"
 
-
-
 model = "Groq/Llama-3-Groq-8B-Tool-Use"
 base_url = "http://localhost:8000/v1/"
-
 
 client = OpenAI(
     base_url=base_url,
@@ -95,10 +84,9 @@ response = client.chat.completions.create(
     ]
 )
 print(response.choices[0].message.content)
-
+EOF
 ----
-+
 
-Again we can see in the GPU monitor how its resources are being utilized until the response is returned.
+Once again, you can see in the GPU monitor how its resources are being utilized until the response is returned.
 
-You can experiment with different queries by just modifying the question in both the Python script or the *curl* command.
+Try a few more queries by adjusing the content in the Python script or the *curl* command to see how the GPU resources are used.
