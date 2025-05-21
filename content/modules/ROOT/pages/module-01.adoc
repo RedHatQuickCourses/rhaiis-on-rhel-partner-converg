@@ -60,7 +60,7 @@ pip install openai
 
 As you can see in the simple script below, it is creating a client that asks our model why Red Hat AI Inference Server is good for RHEL.
 
-You will need to generate an API key so that the script can use OpenAI API. Follow https://www.guidingtech.com/how-to-generate-openai-api-key/[these instructions,window=_blank]
+You will need to generate an API key so that the script can use OpenAI API. Follow https://www.guidingtech.com/how-to-generate-openai-api-key/[these instructions^]
 to generate your key, then substitute '<your_api_key>' in the script with its value.
 
 [source,yaml,role=execute,subs=attributes+]
