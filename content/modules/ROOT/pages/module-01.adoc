@@ -63,6 +63,9 @@ As you can see in the simple script below, it is creating a client that asks our
 You will need to generate an API key so that the script can use OpenAI API.
 Follow https://www.guidingtech.com/how-to-generate-openai-api-key/[these instructions^] to generate your key, then substitute '<your_api_key>' in the script with its value.
 
+In here we already have the api_key which you can use.
+Once you create the api.py python script, replace <your_api_key with "llamastack" (including double quotes.
+
 [source,yaml,role=execute,subs=attributes+]
 ----
 cat << 'EOF' > api.py
@@ -87,6 +90,14 @@ response = client.chat.completions.create(
 )
 print(response.choices[0].message.content)
 EOF
+----
+
+Use editor like vi to update the api_key value as noted in the above script and save it.
+
+Run the python script using the following command
+[source,yaml,role=execute,subs=attributes+]
+----
+python api.py
 ----
 
 Once again, you can see in the GPU monitor how its resources are being utilized until the response is returned.
