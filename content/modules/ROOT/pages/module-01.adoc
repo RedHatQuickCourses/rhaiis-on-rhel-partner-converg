@@ -242,6 +242,10 @@ Once again, you can see in the GPU monitor how its resources are being utilized 
 
 Try a few more queries by adjusing the content in the Python script or the *curl* command to see how the GPU resources are used and the accuracy of the responses.
 
+== Resources
+
+* link:https://www.redhat.com/en/products/ai/inference-server[Red Hat AI Inference Server]
+* link:https://docs.redhat.com/en/documentation/red_hat_ai_inference_server/3.0[Documentation]
 
 == Conclusion
 
@@ -251,19 +255,12 @@ Key highlights of RHAIIS include:
 
 * **Industry Standard OpenAI API Compatibility**: RHAIIS implements the OpenAI API specification, making it easy to integrate with existing applications and tools that expect OpenAI-compatible endpoints. This compatibility reduces migration effort and allows for seamless adoption.
 
-* **High Performance**: The server efficiently utilizes GPU resources, as demonstrated through our monitoring exercises, providing fast inference times for large language models.
+* **High Performance**: The server efficiently utilizes GPU resources, providing fast inference times for Large Language Models.
 
 * **Enterprise Ready**: Built for Red Hat Enterprise Linux (RHEL), Red Hat OpenShift, and 3rd Party Platforms, RHAIIS offers the reliability, security, and support that enterprise environments require.
 
 * **Flexible Model Support**: RHAIIS supports various model formats and can serve different types of language models, making it versatile for different use cases.
 
-* **Easy Integration**: Whether using simple curl commands or Python clients, RHAIIS provides straightforward integration patterns that developers can quickly adopt.
+* **Easy Integration**: Developers can consume the RHAIIS API endpoint using any framework and language that supports industry standard OpenAI API.
 
-Developer can consume the RHAIIS API endpoint using and framework that supports the OpenAI API.
-
-=== Resources
-
-
-
-The combination of OpenAI API compatibility, enterprise-grade reliability, and high performance makes RHAIIS an excellent choice for organizations looking to deploy AI inference capabilities on their RHEL infrastructure. Its ability to serve models efficiently while maintaining compatibility with industry standards positions it as a compelling solution for modern AI workloads.
-
+The combination of OpenAI API compatibility, enterprise-grade reliability, and high performance makes RHAIIS an excellent choice for organizations looking to deploy AI inference capabilities on their RHEL, RHEL AI, OpenShift AIand 3rd Party Platforms infrastructure. Its ability to serve models efficiently while maintaining compatibility with industry standards positions it as a compelling solution for modern AI workloads.
