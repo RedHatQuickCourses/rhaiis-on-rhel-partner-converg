@@ -11,37 +11,157 @@ The RHAIIS container has been created and it is already running on the host.
 
 == Monitor GPU utilization
 
-In the terminal on top, check the GPU utilization by typing this command:
+. Check that the RHAIIS systemd service is running, start by working in the top terminal.
++
 
-[source,yaml,role=execute,subs=attributes+]
+[source,sh,role=execute]
+----
+sudo systemctl status rhaiis
+----
++
+
+.Sample Output
+[source,texinfo]
+----
+● rhaiis.service - RHAIIS Service
+     Loaded: loaded (/etc/systemd/system/rhaiis.service; enabled; preset: disabled)
+     Active: active (running) since Thu 2025-06-26 18:57:43 UTC; 3s ago
+   Main PID: 14418 (podman)
+      Tasks: 11 (limit: 98873)
+     Memory: 35.8M
+        CPU: 92ms
+     CGroup: /system.slice/rhaiis.service
+             ├─14418 /usr/bin/podman run --rm -it --device nvidia.com/gpu=all -p 8000:8000 --ipc=host --env HUGGING_FACE_HUB_TOKEN=hf_random_token>
+             └─14432 catatonit -P
+----
+
+. Query its OpenAPI endpoint for the model list
++
+
+[source,sh,role=execute]
+----
+curl -s http://localhost:8000/v1/models | jq
+----
++
+.Sample Output
+[source,texinfo]
+----
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "RedHatAI/gemma-3-1b-it-quantized.w8a8",
+      "object": "model",
+      "created": 1750964567,
+      "owned_by": "vllm",
+      "root": "RedHatAI/gemma-3-1b-it-quantized.w8a8",
+      "parent": null,
+      "max_model_len": 8192,
+      "permission": [
+        {
+          "id": "modelperm-9ff130086afd4fba87417239e10c36f3",
+          "object": "model_permission",
+          "created": 1750964567,
+          "allow_create_engine": false,
+          "allow_sampling": true,
+          "allow_logprobs": true,
+          "allow_search_indices": false,
+          "allow_view": true,
+          "allow_fine_tuning": false,
+          "organization": "*",
+          "group": null,
+          "is_blocking": false
+        }
+      ]
+    }
+  ]
+}
+----
++
+
+We can see that the model `RedHatAI/gemma-3-1b-it-quantized.w8a8` is available.
++
+
+// TODO: Add the model description here and explanation
+
+. Check the GPU utilization by using the *nvtop* command in the bottom terminal. You can Exit at anytime by using either the kbd:[q] or kdb:[Esc] key.
++
+
+[source,sh,role=execute]
 ----
 nvtop
 ----
- 
-NOTE: Initially the GPU utilization is 0 as there is no load in it.
++
+image::nvtop-rhaiis.png[alt="nvtop output"] 
++
+
+NOTE: The ouput may not match the above and will vary depending on the GPU utilization, the GPU type, and the model being used.
+
 
 == Query Red Hat AI Inference Server
 
-In the bottom terminal, submit this query using the *curl* command:
+. In the top terminal, submit this query using the `curl` command. The request is long enough that the GPU will be fully utilized for a short while.
++
 
-[source,yaml,role=execute,subs=attributes+]
+[source,bash,role=execute,subs=attributes+]
 ----
 curl -X POST http://localhost:8000/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "Groq/Llama-3-Groq-8B-Tool-Use",
+    "model": "RedHatAI/gemma-3-1b-it-quantized.w8a8",
     "messages": [
       {
         "role": "user",
-        "content": "Write me 10 to 15 paragraphs about RHEL"
+        "content": "Write me 5 to 10 paragraphs about RHEL"
       }
     ],
     "temperature": 0.7,
-    "max_tokens": 5000
+    "max_tokens": 1500
   }' | jq
 ----
++
 
-Look at the termial where the GPU monitor is running and you will see how its resources are being used until the response is displayed.
+.Sample Output
+[source,texinfo]
+----
+{
+  "id": "chatcmpl-91897da3596640b68d5bf581fc9da4c4",
+  "object": "chat.completion",
+  "created": 1750965146,
+  "model": "RedHatAI/gemma-3-1b-it-quantized.w8a8",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "reasoning_content": null,
+        "content": "
+        ....
+        ....
+        ....
+        ....
+        ....",
+        "tool_calls": []
+      },
+      "logprobs": null,
+      "finish_reason": "stop",
+      "stop_reason": 106
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 21,
+    "total_tokens": 732,
+    "completion_tokens": 711,
+    "prompt_tokens_details": null
+  },
+  "prompt_logprobs": null
+}
+----
++
+
+Look at the termial where the GPU monitor is running and you will see how its resources are being used until the response is displayed. 
+At the end of the response, you will see the usage data.
++
 
 Try a few more queries by adjusting the content in the API call above and see how the GPU resources are used.
 
@@ -51,34 +171,49 @@ Now, you will use OpenAI API to query Red Hat AI Inference Server.
 This is really useful if we want applications to be able to communicate with it. 
 OpenAI API has become a standard as it supports stateful interactions, function calling, and integration with external tools and data, making it a powerful resource for building intelligent applications.
 
-We will create a Python script that will submit the query to the Red Hat AI Inference Server. But before we need to install the OpenAI library.
+. We will create a Python script that will submit the query to the Red Hat AI Inference Server. But before we need to install the OpenAI library.
++
 
-[source,yaml,role=execute,subs=attributes+]
+[source,bash,role=execute,subs=attributes+]
 ----
 pip install openai
 ----
++
+
+.Sample Output
+[source,texinfo]
+----
+Defaulting to user installation because normal site-packages is not writeable
+Collecting openai
+  Downloading openai-1.92.1-py3-none-any.whl (753 kB)
+     |████████████████████████████████| 753 kB 19.2 MB/s 
+....
+<TRUNCATED>
+....
+Installing collected packages: typing-extensions, sniffio, h11, exceptiongroup, typing-inspection, pydantic-core, httpcore, anyio, annotated-types, tqdm, pydantic, jiter, httpx, distro, openai
+Successfully installed annotated-types-0.7.0 anyio-4.9.0 distro-1.9.0 exceptiongroup-1.3.0 h11-0.16.0 httpcore-1.0.9 httpx-0.28.1 jiter-0.10.0 openai-1.92.1 pydantic-2.11.7 pydantic-core-2.33.2 sniffio-1.3.1 tqdm-4.67.1 typing-extensions-4.14.0 typing-inspection-0.4.1
+----
+
+. Create a Python script that will submit the query to the Red Hat AI Inference Server.
++
 
 As you can see in the simple script below, it is creating a client that asks our model why Red Hat AI Inference Server is good for RHEL.
+In here we already have a dummy api_key configured.
++
 
-You will need to generate an API key so that the script can use OpenAI API.
-Follow https://www.guidingtech.com/how-to-generate-openai-api-key/[these instructions^] to generate your key, then substitute '<your_api_key>' in the script with its value.
-
-In here we already have the api_key which you can use.
-Once you create the api.py python script, replace <your_api_key with "llamastack" (including double quotes.
-
-[source,yaml,role=execute,subs=attributes+]
+[source,bash,role=execute,subs=attributes+]
 ----
 cat << 'EOF' > api.py
 from openai import OpenAI
 
 api_key = "llamastack"
 
-model = "Groq/Llama-3-Groq-8B-Tool-Use"
+model = "RedHatAI/gemma-3-1b-it-quantized.w8a8"
 base_url = "http://localhost:8000/v1/"
 
 client = OpenAI(
     base_url=base_url,
-    api_key=<your_api_key>,
+    api_key=api_key,
 )
 
 response = client.chat.completions.create(
@@ -91,15 +226,38 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 EOF
 ----
++
 
-Use editor like vi to update the api_key value as noted in the above script and save it.
-
-Run the python script using the following command
-[source,yaml,role=execute,subs=attributes+]
+. Run the python script using the following command
++
+[source,sh,role=execute]
 ----
 python api.py
 ----
++
+NOTE: The output is omitted as there will a degree of non-determinisim in it, however expect a lengthy response on topic.
+
 
 Once again, you can see in the GPU monitor how its resources are being utilized until the response is returned.
 
 Try a few more queries by adjusing the content in the Python script or the *curl* command to see how the GPU resources are used and the accuracy of the responses.
+
+
+== Conclusion
+
+In this module, we've explored the Red Hat AI Inference Server (RHAIIS) and demonstrated its powerful capabilities as a production-ready LLM runtime. RHAIIS provides a robust, scalable solution for deploying and serving large language models in enterprise environments.
+
+Key highlights of RHAIIS include:
+
+* **Industry Standard OpenAI API Compatibility**: RHAIIS implements the OpenAI API specification, making it easy to integrate with existing applications and tools that expect OpenAI-compatible endpoints. This compatibility reduces migration effort and allows for seamless adoption.
+
+* **High Performance**: The server efficiently utilizes GPU resources, as demonstrated through our monitoring exercises, providing fast inference times for large language models.
+
+* **Enterprise Ready**: Built for Red Hat Enterprise Linux (RHEL), RHAIIS offers the reliability, security, and support that enterprise environments require.
+
+* **Flexible Model Support**: RHAIIS supports various model formats and can serve different types of language models, making it versatile for different use cases.
+
+* **Easy Integration**: Whether using simple curl commands or Python clients, RHAIIS provides straightforward integration patterns that developers can quickly adopt.
+
+The combination of OpenAI API compatibility, enterprise-grade reliability, and high performance makes RHAIIS an excellent choice for organizations looking to deploy AI inference capabilities on their RHEL infrastructure. Its ability to serve models efficiently while maintaining compatibility with industry standards positions it as a compelling solution for modern AI workloads.
+
