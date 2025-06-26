@@ -253,11 +253,17 @@ Key highlights of RHAIIS include:
 
 * **High Performance**: The server efficiently utilizes GPU resources, as demonstrated through our monitoring exercises, providing fast inference times for large language models.
 
-* **Enterprise Ready**: Built for Red Hat Enterprise Linux (RHEL), RHAIIS offers the reliability, security, and support that enterprise environments require.
+* **Enterprise Ready**: Built for Red Hat Enterprise Linux (RHEL), Red Hat OpenShift, and 3rd Party Platforms, RHAIIS offers the reliability, security, and support that enterprise environments require.
 
 * **Flexible Model Support**: RHAIIS supports various model formats and can serve different types of language models, making it versatile for different use cases.
 
 * **Easy Integration**: Whether using simple curl commands or Python clients, RHAIIS provides straightforward integration patterns that developers can quickly adopt.
+
+Developer can consume the RHAIIS API endpoint using and framework that supports the OpenAI API.
+
+=== Resources
+
+
 
 The combination of OpenAI API compatibility, enterprise-grade reliability, and high performance makes RHAIIS an excellent choice for organizations looking to deploy AI inference capabilities on their RHEL infrastructure. Its ability to serve models efficiently while maintaining compatibility with industry standards positions it as a compelling solution for modern AI workloads.
 
