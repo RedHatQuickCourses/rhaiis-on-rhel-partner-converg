@@ -263,4 +263,4 @@ Key highlights of RHAIIS include:
 
 * **Easy Integration**: Developers can consume the RHAIIS API endpoint using any framework and language that supports industry standard OpenAI API.
 
-The combination of OpenAI API compatibility, enterprise-grade reliability, and high performance makes RHAIIS an excellent choice for organizations looking to deploy AI inference capabilities on their RHEL, RHEL AI, OpenShift AIand 3rd Party Platforms infrastructure. Its ability to serve models efficiently while maintaining compatibility with industry standards positions it as a compelling solution for modern AI workloads.
+The combination of OpenAI API compatibility, enterprise-grade reliability, and high performance makes RHAIIS an excellent choice for organizations looking to deploy AI inference capabilities on their RHEL, RHEL AI, OpenShift AI, and 3rd Party Platforms infrastructure. Its ability to serve models efficiently while maintaining compatibility with industry standards positions it as a compelling solution for modern AI workloads.
