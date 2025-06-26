@@ -1,6 +1,6 @@
 = Using Red Hat AI Inference Server
 
-In this lab, you will be using Red Hat AI Inference Server, running in a container on RHEL 9.5 and serving the Llama-3-Groq-8B model.
+In this lab, you will be using Red Hat AI Inference Server, running in a container on RHEL 9.5 and serving the `gemma-3-1b-it-quantized.w8a8` model.
 In order to get the inference server running you would need to pull its image from the registry and then create and run a container with that image.
 
 To save you time, the image that will be used in the container has been pre-pulled and is already available in your RHEL host.
