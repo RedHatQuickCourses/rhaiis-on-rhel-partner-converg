@@ -1,0 +1,6 @@
+type: showroom
+tabs:
+ - name: Terminal 1
+   path: '/tty-top'
+   secondary_name: Terminal 2
+   secondary_path: '/tty-bottom'
