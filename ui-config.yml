@@ -1,8 +1,5 @@
 type: showroom
 tabs:
  - name: Terminal 1
-   path: '/tty-top'
-   port: 443
    secondary_name: Terminal 2
-   secondary_path: '/tty-bottom'
-   secondary_port: 443
+   type: 'double-terminal'
