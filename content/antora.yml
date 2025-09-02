@@ -1,5 +1,5 @@
 name: modules
-title: Red Hat AI Inference Server Demo
+title: Workshop for Partner Convergence event
 version: master
 nav:
   - modules/ROOT/nav.adoc

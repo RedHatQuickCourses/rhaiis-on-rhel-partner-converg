@@ -1,6 +1,6 @@
 ---
 site:
-  title: Red Hat AI Inference Server Demo
+  title: Red Hat AI Inference Server Workshop for Partner Convergence event
   start_page: modules::index.adoc
 
 content:
