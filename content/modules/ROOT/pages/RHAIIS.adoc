@@ -1,0 +1,345 @@
+= Introduction
+
+Inference is key when using AI and models are only as useful as their ability to deliver fast, cost-effective, and scalable inference.
+
+Some of the main challenges when it comes to scaling up inference are:
+
+. Infrastructure cost.
+. Operational complexities.
+. Deployment constraints that make inference difficult across hybrid environments.
+
+Because of the exponential growth of the capability and size of the models, more and more organizations want an efficient and standardized way to deploy their own, private AI solutions across environments and using several types of accelerators.
+
+=== Features of Inference server
+
+Red Hat AI Inference Server is a perfect solution because of its features:
+
+. Fast.
+. Cost-effective.
+. Performance.
+. It can serve most generative AI models.
+. It can use most AI accelerators.
+. It can be used on-premises as well as in public, private or hybrid cloud.
+
+image::rhaiis.png[]
+
+=== What is included in RHAIIS?
+
+* AI Inference Server is part of the Red Hat AI Platform.
+
+* Built on an enterprise-grade `vLLM`, offering faster and more memory-efficient LLM inference.
+
+* Includes `LLM Compressor` to cut compute costs and speed up deployments while preserving accuracy.
+
+* Provides a `repository` of validated and optimized Hugging Face `models`:
+
+    . Validated models: tested for performance on vLLM and multiple hardware setups.
+
+    . Optimized models: compressed for efficiency and speed without losing accuracy.
+
+* Red Hat Inference Server is built to make enterprise LLM serving reasonable and efficient .
+
+image::rhai.png[]
+
+=== Lets Start the Workshop
+
+In this workshop, we will implement a RAG pipeline, taking Medium articles as input data, which we will embed into vectors and store this vector database in chromadb and then when inference, it will use the RAG data source. 
+
+To perform this lab exit from root user account into `dev` user
+
+```
+[root@rhaiis ~]# exit
+logout
+[dev@rhaiis ~]$
+```
+
+
+==== 1. Checking service and gpu details.
+
+Check the status and content of `rhaiis.service`
+
+```
+$ systemctl status rhaiis.service
+$ systemctl cat rhaiis.service
+```
+
+Validate the current container running for RHAIIS. 
+
+```
+$ podman images
+$ podman ps -a
+
+$ ps -ef|grep 'podman run'
+```
+
+Lets break down the arguments of rhaiis.
+
+.Podman specific arguments
+[cols="1,3", options="header"]
+|===
+|     Argument        | Description
+
+| --device nvidia.com/gpu=all
+| Add a host device to the container
+
+| -p 8000:8000
+| Mapping container port to host port
+
+| --env HUGGING_FACE_HUB_TOKEN=<hf_token>
+| Exporting token to connect to Hugging Face
+
+| registry.redhat.io/rhaiis/vllm-cuda-rhel9:3.0.0
+| The rhaiis container image being used
+|===
+
+
+.vLLM specific arguments
+[cols="1,3", options="header"]
+|===
+| Argument           | Description
+
+| --tensor-parallel-size 1
+| Number of GPUs for tensor parallelism (set to 1 for single-GPU)
+
+| --max-model-len 8192
+| Maximum number of tokens for prompt + output (e.g., 4096)
+
+| --model RedHatAI/gemma-3-1b-it-quantized.w8a8
+| Model name to be served from the RedHatAI Hugging Face repo
+|===
+
+
+
+Lets check the details of gpu attached and observe GPU model, memory, utilization, power usage, and driver
+version and process currently using the gpu..
+
+```
+$ nvidia-smi
+```
+
+Check podman logs to understand how model gets served and api endpoints.
+
+```
+$ podman ps [get container id from here]
+$ podman logs <container id> | less
+...
+INFO 09-12 07:16:33 [gpu_worker.py:255] Available KV cache memory: 17.68 GiB
+...
+INFO 09-12 07:16:33 [kv_cache_utils.py:1001] Maximum concurrency for 8,192 tokens per request: 195.96x
+...
+INFO 09-12 07:16:38 [api_server.py:1818] Starting vLLM API server 0 on http://0.0.0.0:8000
+INFO 09-12 07:16:38 [launcher.py:36] Available routes are:
+INFO 09-12 07:16:38 [launcher.py:44] Route: /openapi.json, Methods: GET, HEAD
+INFO 09-12 07:16:38 [launcher.py:44] Route: /docs, Methods: GET, HEAD
+INFO 09-12 07:16:38 [launcher.py:44] Route: /docs/oauth2-redirect, Methods: GET, HEAD
+INFO 09-12 07:16:38 [launcher.py:44] Route: /redoc, Methods: GET, HEAD
+INFO 09-12 07:16:38 [launcher.py:44] Route: /health, Methods: GET
+INFO 09-12 07:16:38 [launcher.py:44] Route: /load, Methods: GET
+INFO 09-12 07:16:38 [launcher.py:44] Route: /ping, Methods: POST
+INFO 09-12 07:16:38 [launcher.py:44] Route: /ping, Methods: GET
+INFO 09-12 07:16:38 [launcher.py:44] Route: /tokenize, Methods: POST
+INFO 09-12 07:16:38 [launcher.py:44] Route: /detokenize, Methods: POST
+INFO 09-12 07:16:38 [launcher.py:44] Route: /v1/models, Methods: GET
+INFO 09-12 07:16:38 [launcher.py:44] Route: /version, Methods: GET
+INFO 09-12 07:16:38 [launcher.py:44] Route: /v1/responses, Methods: POST
+INFO 09-12 07:16:38 [launcher.py:44] Route: /v1/responses/{response_id}, Methods: GET
+INFO 09-12 07:16:38 [launcher.py:44] Route: /v1/responses/{response_id}/cancel, Methods: POST
+INFO 09-12 07:16:38 [launcher.py:44] Route: /v1/chat/completions, Methods: POST
+INFO 09-12 07:16:38 [launcher.py:44] Route: /v1/completions, Methods: POST
+INFO 09-12 07:16:38 [launcher.py:44] Route: /v1/embeddings, Methods: POST
+INFO 09-12 07:16:38 [launcher.py:44] Route: /pooling, Methods: POST
+INFO 09-12 07:16:38 [launcher.py:44] Route: /classify, Methods: POST
+INFO 09-12 07:16:38 [launcher.py:44] Route: /score, Methods: POST
+INFO 09-12 07:16:38 [launcher.py:44] Route: /v1/score, Methods: POST
+INFO 09-12 07:16:38 [launcher.py:44] Route: /v1/audio/transcriptions, Methods: POST
+INFO 09-12 07:16:38 [launcher.py:44] Route: /v1/audio/translations, Methods: POST
+INFO 09-12 07:16:38 [launcher.py:44] Route: /rerank, Methods: POST
+INFO 09-12 07:16:38 [launcher.py:44] Route: /v1/rerank, Methods: POST
+INFO 09-12 07:16:38 [launcher.py:44] Route: /v2/rerank, Methods: POST
+INFO 09-12 07:16:38 [launcher.py:44] Route: /scale_elastic_ep, Methods: POST
+INFO 09-12 07:16:38 [launcher.py:44] Route: /is_scaling_elastic_ep, Methods: POST
+INFO 09-12 07:16:38 [launcher.py:44] Route: /invocations, Methods: POST
+INFO 09-12 07:16:38 [launcher.py:44] Route: /metrics, Methods: GET
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+```
+
+==== 2. Interacting with the model.
+
+List the available model.
+
+```
+$ curl -s http://localhost:8000/v1/models |jq
+```
+
+On second terminal session monitor gpu activity.
+
+```
+$ nvtop
+```
+
+On first terminal Send the prompt to the model 
+
+[source,bash,role=execute,subs=attributes+]
+----
+curl -s -X POST http://localhost:8000/v1/chat/completions \
+  -H “Content-Type: application/json” \
+  -d ‘{
+    “model”: “RedHatAI/gemma-3-1b-it-quantized.w8a8”,
+    “messages”: [
+      {
+        “role”: “user”,
+        “content”: “Write me 5 to 10 paragraphs about RHEL”
+      }
+    ],
+    “temperature”: 0.7,
+    “max_tokens”: 1500
+  }’ | jq
+----
+
+Now on second terminal observe gpu activity again.
+
+==== 3. Using openai api and interactive prompt
+
+Now, you will use OpenAI API to query Red Hat AI Inference Server.
+
+* This is really useful if we want applications to be able to communicate with it. 
+* OpenAI API has become a standard as it supports stateful interactions, function calling, and integration with external tools and data, making it a powerful resource for building intelligent applications.
+
+We will create a Python virtual environment and inside it python script that will submit the query to the Red Hat AI Inference Server. 
+
+```
+$ python -m venv mypi
+$ source mypi/bin/activate
+```
+
+Before we need to install the OpenAI library.
+
+[source,bash,role=execute,subs=attributes+]
+----
+pip install openai
+----
+
+Create following python script `api.py`
+
+[source,bash,role=execute,subs=attributes+]
+----
+cat << 'EOF' > api.py
+from openai import OpenAI
+
+api_key = "llamastack"
+
+model = "RedHatAI/gemma-3-1b-it-quantized.w8a8"
+base_url = "http://localhost:8000/v1/"
+
+client = OpenAI(
+    base_url=base_url,
+    api_key=api_key,
+)
+while True:
+    prompt = input("User Prompt >> ")
+    response = client.chat.completions.create(
+    model=model,
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": prompt}
+    ]
+    )
+    print("RHAIIS Response >>")
+    print(response.choices[0].message.content)
+EOF
+----
+
+Execute python script and test with different prompts and see the responses. Also monitor gpu activity simultaneously.
+
+[source,bash,role=execute,subs=attributes+]
+----
+python api.py
+----
+
+==== 4. Now lets build small web based gui application to interact with the model.
+
+We will install `gradio` as frontend and continue to use model served via rhaiis as backend.
+
+Create a python script which will provide public facing url to interact with the model.
+
+[source,bash,role=execute,subs=attributes+]
+----
+pip install gradio
+----
+
+Create following python script.
+
+[source,bash,role=execute,subs=attributes+]
+----
+cat << 'EOF' > gui.py
+import gradio as gr 
+from openai import OpenAI 
+ 
+# Connect to local vLLM endpoint 
+api_key = "llamastack"
+
+model = "RedHatAI/gemma-3-1b-it-quantized.w8a8"
+base_url = "http://localhost:8000/v1/"
+
+client = OpenAI(
+    base_url=base_url,
+    api_key=api_key,
+)
+
+def ask_vllm(prompt): 
+    response = client.chat.completions.create( 
+        model=model,
+        messages=[{"role": "user", "content": prompt}], 
+        max_tokens=300, 
+        temperature=0.7 
+    ) 
+    return response.choices[0].message.content.strip() 
+ 
+# Gradio interface with public sharing 
+gr.Interface( 
+    fn=ask_vllm, 
+    inputs="text", 
+    outputs="text", 
+    title="Chat with RHAIIS Model" 
+).launch(share=True) 
+EOF
+----
+
+Finally execute the script
+
+[source,bash,role=execute,subs=attributes+]
+----
+python gui.py
+----
+
+You should see public url as follows. Open the url which got generated for you in web browser and interact with the model.
+
+```
+Running on local URL:  http://127.0.0.1:7860
+Running on public URL: https://<your own url>.gradio.live
+```
+
+== Resources
+
+* link:https://www.redhat.com/en/products/ai/inference-server[Red Hat AI Inference Server]
+* link:https://docs.redhat.com/en/documentation/red_hat_ai_inference_server/3.0[Documentation]
+
+== Conclusion
+
+In this module, we've explored the Red Hat AI Inference Server (RHAIIS) and demonstrated its powerful capabilities as a production-ready LLM runtime. RHAIIS provides a robust, scalable solution for deploying and serving large language models in enterprise environments.
+
+Key highlights of RHAIIS include:
+
+* **Industry Standard OpenAI API Compatibility**: RHAIIS implements the OpenAI API specification, making it easy to integrate with existing applications and tools that expect OpenAI-compatible endpoints. This compatibility reduces migration effort and allows for seamless adoption.
+
+* **High Performance**: The server efficiently utilizes GPU resources, providing fast inference times for Large Language Models.
+
+* **Enterprise Ready**: Built for Red Hat Enterprise Linux (RHEL), Red Hat OpenShift, and 3rd Party Platforms, RHAIIS offers the reliability, security, and support that enterprise environments require.
+
+* **Flexible Model Support**: RHAIIS supports various model formats and can serve different types of language models, making it versatile for different use cases.
+
+* **Easy Integration**: Developers can consume the RHAIIS API endpoint using any framework and language that supports industry standard OpenAI API.
+
+The combination of OpenAI API compatibility, enterprise-grade reliability, and high performance makes RHAIIS an excellent choice for organizations looking to deploy AI inference capabilities on their RHEL, RHEL AI, OpenShift AI, and 3rd Party Platforms infrastructure. Its ability to serve models efficiently while maintaining compatibility with industry standards positions it as a compelling solution for modern AI workloads.

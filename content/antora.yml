@@ -1,5 +1,5 @@
 name: modules
-title: Red Hat AI Inference Server Workshop for Partner Convergence event
+title: Red Hat Lightspeed & Red Hat AI Inference Server Workshop for Partner Convergence event
 version: master
 nav:
   - modules/ROOT/nav.adoc
@@ -7,7 +7,7 @@ nav:
 asciidoc:
   attributes:
     experimental: true
-    lab_name: "Red Hat AI Inference Server Workshop for Partner Convergence event"
+    lab_name: "Red Hat Lightspeed & Red Hat AI Inference Server Workshop for Partner Convergence event"
     release-version: master
     page-pagination: true
     guid: my-guid

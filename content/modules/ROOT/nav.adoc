@@ -1,2 +1,4 @@
-* xref:index.adoc[1. Introduction]
-* xref:module-01.adoc[2. Using Red Hat AI Inference Server]
+* xref:CLA.adoc[**Workshop 1**]
+* xref:RHAIIS.adoc[**Workshop 2**]
+
+

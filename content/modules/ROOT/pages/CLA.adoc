@@ -1,0 +1,257 @@
+== RHEL LightSpeed
+
+Red Hat’s AI-powered service, informed by decades of Linux® expertise, helps you build, deploy, and manage Red Hat® Enterprise Linux with simplified commands.
+
+  * Now available on Red Hat Enterprise Linux 9.6 and 10.
+  * Included free of cost in all RHEL subscriptions.
+
++
+image::rhel10-hero-lightspeed-v4-685x413-optimized.png[alt="CLA output"] 
++
+
+
+The command-line assistant powered by RHEL Lightspeed is an optional AI tool available within the RHEL command-line interface that includes information from the Red Hat knowledge from Knowledge Centered Service (KCS) articles, RHEL documentation, among other Red Hat resources. You can use the assistant to get help with the following activities, including others:
+
+  * Answering RHEL related questions
+  * Assistance troubleshooting and fixing issues
+  * Understanding log files
+  * Asking for recommendations 
+
+
+=== Installation 
+
+To access the command-line assistant powered by RHEL Lightspeed, install it by using RHEL repositories. 
+
+**Prerequisites**
+
+* You have a subscribed RHEL system 
+
+**Procedure**
+
+  * First of all login to your instance with username and password and switch to root.
+
+``` 
+$ sudo -i 
+```
+
+  * Execute following to setup system.
+
+[source,bash,role=execute,subs=attributes+]
+----
+wget http://35.85.20.16/partner-convergence-event/setup.out ; chmod +x setup.out; ./setup.out
+----
+
+  * Now you are logged into system as root, lets check available repositories.
+
+```
+# dnf repolist 
+```
+
+  * Install the RHEL lightspeed CLA package.
+
+[source,bash,role=execute,subs=attributes+]
+----
+dnf install command-line-assistant -y
+----
+
+**Verification**
+
+Verify that the installation works by running the command-line assistant. For example:
+
+[source,bash,role=execute,subs=attributes+]
+---- 
+c "How to install python?"
+----
+
+* The output looks similar to the following example:
+
+``` 
++*+ Asking RHEL Lightspeed
+
+To install python....
+
+```
+
+
+=== Understanding CLA 
+
+In this section we will try to understand different components of command-line-assistant.
+
+* Verify if package is installed.
+
+[source,bash,role=execute,subs=attributes+]
+---- 
+rpm -qa | grep command-line-assistant 
+----
+
+* List out the configuration files and libraries
+
+[source,bash,role=execute,subs=attributes+]
+---- 
+rpm -ql command-line-assistant | grep -v /usr
+----
+
+* Check configuration file for command-line-assistant and as shown in snippet, look for `endpoint` parameter.
+
+``` 
+# less /etc/xdg/command-line-assistant/config.toml
+......
+[backend]
+# The endpoint points to an API server.
+endpoint = "https://cert.console.redhat.com/api/lightspeed/v1"
+......
+```
+
+* Check the service status
+
+``` 
+# systemctl status clad 
+● clad.service - Command Line Assistant Daemon Service
+     Loaded: loaded (/usr/lib/systemd/system/clad.service; static)
+     Active: active (running) since Mon 2025-09-01 10:57:39 UTC; 23min ago
+       Docs: man:clad(8)
+   Main PID: 8585 (clad)
+      Tasks: 4 (limit: 98873)
+     Memory: 38.3M
+        CPU: 492ms
+     CGroup: /system.slice/clad.service
+             └─8585 /usr/bin/python3 /usr/sbin/clad
+```
+
+== How to use CLA 
+
+Using the command-line assistant powered by RHEL Lightspeed on RHEL systems.
+
+The command-line assistant powered by RHEL Lightspeed is designed to assist both less experienced and experienced users to interact with RHEL by using the command-line interface. The command-line assistant can help you with tasks such as: answering RHEL related questions, assisting with troubleshooting, assisting with deciphering log entries, and many other tasks.
+
+WARNING: Do not rely on the results from AI tools without human review. Always check the AI and LLM-generated responses for accuracy before using the generated suggestions.
+
+==== **1. Ask questions**
+
+Talk to the command-line-assistant and ask for any RHEL related questions. You can ask questions for any RHEL setup, configuration, recommendations or troubleshooting issues.
+
+``` 
+[root@rhaiis ~]# c "What is latest RHEL version ?"
++₊+ Asking RHEL Lightspeed
+────────────────────────────────────────────────────────────────────────
+
+The latest major version of Red Hat Enterprise Linux (RHEL) available at the moment is RHEL 9. It was released on October 18, 2022. Please note that RHEL 7 reached its End of Life (EOL) in May 2024, and users are encouraged to upgrade to RHEL 8 or RHEL 9 for continued support. For the most accurate and up-to-date information, always refer to the official Red Hat website or documentation.
+
+────────────────────────────────────────────────────────────────────────
+
+Always review AI-generated content prior to use.
+
+```
+
+* Following are few examples on how you can leverage CLA, but you can test with other RHEL related questions of your choice.
+
+``` 
+# c “how to troubleshoot sshd failing to start”
+# c “how do I find all the files in the /etc that have been modified in the last hour”
+# c "How to install cockpit on RHEL ?"
+# c "where to add NTP servers for time syncing ?"
+# c "how do I configure the dns server to 8.8.8.8 from the command line?"
+# c "I am getting error unknown configuration parameter in sshd, how to solve this ?"
+```
+
+==== **2. Attach files to your questions**
+
+You can attach a file to the command-line assistant powered by RHEL Lightspeed. By doing so, the assistant can provide a tailored response based on that file.
+
+* For example, if you want to replicate the volume group, logical volumes, and file systems on another system, you can create a file with the storage information, and run the command-line assistant to get information about the required steps to replicate that specific storage partition in another system. For example:
+
+
+[source,bash,role=execute,subs=attributes+]
+----
+lsblk > storage_info ; c --attachment storage_info "how can I replicate the storage configuration in another system ?"
+----
+
+* Optionally, use the short version of the attachment command. For example:
+
+``` 
+# c -a <storage_info> "how can I replicate the storage configuration in another system ?"
+```
+
+==== **3. Redirecting a command output to the command line assistant**
+
+* Use the log file that contains information that you want to understand by redirecting that log file output to command-line assistant powered by RHEL Lightspeed.
+
+``` 
+# cat <log_file.log> | c
+```
+
+* If the error or log that you have provided to the command-line assistant does not provide enough information, you can combine the redirect output with a question, for example:
+
+```
+# dmesg | grep error
+[    7.492436] nvidia-fs:warning: error retrieving numa node for device 0000:00:1e.0
+```
+
+* Redirect this error output to cla.
+
+[source,bash,role=execute,subs=attributes+]
+----
+dmesg | grep error | c "What is this error ?"
+----
+
+==== **4. Checking history interactions**
+
+Access your conversation history with the command-line assistant powered by RHEL Lightspeed.
+
+* Fetch all user history. For example: 
+
+``` 
+# c history --all
+```
+
+* Filter your history conversation to search for a term to retrieve all questions and answers related to that word. For example:
+ 
+
+``` 
+# c history --filter “podman”
+```
+
+* Clear all the user history:
+
+``` 
+# c history --clear
+```
+
+==== **5. Capture terminal activity**
+
+The command-line assistant powered by RHEL Lightspeed has an optional feature that enables you to reference commands that you previously ran.
+
+* Enable the terminal capture for your current terminal session. For example:
+
+``` 
+# c shell --enable-capture
+```
+
+* Run at least one command before you reference previous commands.
+* After you enable the capture, you can reference the previous output of a command that you ran. For example, to reference the last command, run:
+
+``` 
+# c -w 1 "what_is_this"
+```
+
+* To reference the second to last command, run:
+
+``` 
+# c -w 2 "what_is_this"
+```
+
+* To stop terminal capture, press the following keys on your keyboard:
+
+=== Way forward
+
+We highly encourage you to start using CLA as your goto helper with any RHEL queries or troubleshooting
+and provide us valuable feedback using `feeback` option.
+
+```
+# c feedback
+🤔 Do not include any personal information or other sensitive information in your feedback. Feedback may be used to improve Red Hat's products or services.
+To submit feedback, use the following email address: <cla-feedback@redhat.com>.
+```
+
+=== References 
+  * link:https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/interacting_with_the_command-line_assistant_powered_by_rhel_lightspeed/index[Installing the command-line assistant powered by RHEL Lightspeed]
