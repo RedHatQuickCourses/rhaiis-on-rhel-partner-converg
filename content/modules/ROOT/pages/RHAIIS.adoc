@@ -43,7 +43,8 @@ image::rhai.png[]
 
 === Lets Start the Workshop
 
-In this workshop, we will implement a RAG pipeline, taking Medium articles as input data, which we will embed into vectors and store this vector database in chromadb and then when inference, it will use the RAG data source. 
+In this workshop, you will serve a LLM, monitor GPU usage for your prompts, chat the model using curl and OpenAI API. You will also run small python application with GUI, using RHAIIS server as backend. 
+
 
 To perform this lab exit from root user account into `dev` user
 
@@ -53,8 +54,7 @@ logout
 [dev@rhaiis ~]$
 ```
 
-
-==== 1. Checking service and gpu details.
+==== 1. Checking the rhaiis.service and gpu details.
 
 Check the status and content of `rhaiis.service`
 
@@ -75,7 +75,7 @@ $ ps -ef|grep 'podman run'
 Lets break down the arguments of rhaiis.
 
 .Podman specific arguments
-[cols="1,3", options="header"]
+[cols="4,6", options="header"]
 |===
 |                Argument                  |       Description
 
@@ -94,7 +94,7 @@ Lets break down the arguments of rhaiis.
 
 
 .vLLM specific arguments
-[cols="1,3", options="header"]
+[cols="4,6", options="header"]
 |===
 |                 Argument                 |        Description
 

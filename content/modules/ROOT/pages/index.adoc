@@ -4,23 +4,21 @@ Red Hat welcomes you for this partner convergence workshop.
 
 We have two workshops lined up for you. 
 
-1. Workshop 1 
+=== Workshop 1 
 This workshop introduces command-line-assistant powered by Red Hat Lightspeed. 
 
-With Red Hat lightspeed, we are integrating Gen-AI within our enterprise products, so that customer's are well-equipped with all the Red Hat product knowledge within the product itself. 
+With Red Hat lightspeed, we are integrating Gen-AI within our enterprise products, so that users are well-equipped with all the Red Hat product knowledge within the product itself. 
 
 You will install command line assistant, ask questions and get troubleshooting help from the CLA. 
 
-Please proceed to Workshop 1 tab for the hands-on. 
-
-2. Workshop 2 
+=== Workshop 2 
 
 Red Hat® AI is engineered to help you build and run AI solutions that work exactly how your business does—from first experiments to full production.
 
-Red Hat offers a comprehensive suite of AI/ML solutions designed for enterprise environments. The Red Hat AI Inference Server (RHAIIS) supports efficient model serving at scale, while Red Hat OpenShift AI (RHOAI) provides an end-to-end platform for model development, training, and deployment. Together, they enable organizations to operationalize AI across hybrid cloud infrastructures.
+Red Hat offers a comprehensive suite of AI/ML solutions designed for enterprise environments. 
+* The Red Hat AI Inference Server (RHAIIS) supports efficient model serving at scale, while 
+* Red Hat OpenShift AI (RHOAI) provides an end-to-end platform for model development, training, and deployment. 
 
-image::rhai.png[]
+Together, they enable organizations to operationalize AI across hybrid cloud infrastructures.
 
-In this workshop 2, we will serve a LLM and chat with it using curl and OpenAI API. We will also run small application with GUI, using RHAIIS server as backend. 
-
-Please proceed to workshop 2 tab for the hands-on. 
+In this workshop, you will serve a LLM and chat with it using curl and OpenAI API. We will also run small application with GUI, using RHAIIS server as backend. 

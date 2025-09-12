@@ -271,6 +271,3 @@ To submit feedback, use the following email address: <cla-feedback@redhat.com>.
 === References 
   * link:https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/interacting_with_the_command-line_assistant_powered_by_rhel_lightspeed/index[Installing the command-line assistant powered by RHEL Lightspeed]
 
-=== Conclusion 
-
-We highly encourage you to use command line assistant powered by Red Hat Lightspeed as your daily runner, to save your time and use, manage RHEL more effectively. 
