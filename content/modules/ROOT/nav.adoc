@@ -1,4 +1,2 @@
 * xref:CLA.adoc[**Workshop 1**]
 * xref:RHAIIS.adoc[**Workshop 2**]
-
-

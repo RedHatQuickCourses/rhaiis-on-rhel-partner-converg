@@ -131,23 +131,35 @@ WARNING: Do not rely on the results from AI tools without human review. Always c
 Talk to the command-line-assistant and ask for any RHEL related questions. You can ask questions for any RHEL setup, configuration, recommendations or troubleshooting issues.
 
 ``` 
-[root@rhaiis ~]# c "What is latest RHEL version ?"
-+₊+ Asking RHEL Lightspeed
+[root@rhaiis ~]# c "List out security features in RHEL just with titles?"
+⁺₊+ Asking RHEL Lightspeed
 ────────────────────────────────────────────────────────────────────────
 
-The latest major version of Red Hat Enterprise Linux (RHEL) available at the moment is RHEL 9. It was released on October 18, 2022. Please note that RHEL 7 reached its End of Life (EOL) in May 2024, and users are encouraged to upgrade to RHEL 8 or RHEL 9 for continued support. For the most accurate and up-to-date information, always refer to the official Red Hat website or documentation.
+Here are some key security features in Red Hat Enterprise Linux (RHEL):
+
+1. Firewalld Service
+2. System-wide Cryptographic Policies
+3. SELinux (Security-Enhanced Linux)
+4. Network Bound Device Support
+5. Secure Boot
+6. Support for Hardware Security Modules (HSM) and Smart Cards
+7. FIPS 140-2/140-3 Compliance
+8. Differential Equations and Integrity Verification
+9. Auditd (System Audit)
+10. OpenSCAP (Open Security Content Automation Protocol)
+11. RHEL Lightspeed (AI-driven security and compliance)
+
+These features help ensure the security and integrity of your RHEL systems.
 
 ────────────────────────────────────────────────────────────────────────
-
 Always review AI-generated content prior to use.
-
 ```
 
 * Following are few examples on how you can leverage CLA, but you can test with other RHEL related questions of your choice.
 
 ``` 
-# c “how to troubleshoot sshd failing to start”
-# c “how do I find all the files in the /etc that have been modified in the last hour”
+# c "how to troubleshoot sshd failing to start"
+# c "how do I find all the files in the /etc that have been modified in the last hour"
 # c "How to install cockpit on RHEL ?"
 # c "where to add NTP servers for time syncing ?"
 # c "how do I configure the dns server to 8.8.8.8 from the command line?"
@@ -169,7 +181,7 @@ lsblk > storage_info ; c --attachment storage_info "how can I replicate the stor
 * Optionally, use the short version of the attachment command. For example:
 
 ``` 
-# c -a <storage_info> "how can I replicate the storage configuration in another system ?"
+# c -a storage_info "how can I replicate the storage configuration in another system ?"
 ```
 
 ==== **3. Redirecting a command output to the command line assistant**
@@ -194,7 +206,35 @@ lsblk > storage_info ; c --attachment storage_info "how can I replicate the stor
 dmesg | grep error | c "What is this error ?"
 ----
 
-==== **4. Checking history interactions**
+==== **4. Capture terminal activity**
+
+
+* Enable the terminal capture for your current terminal session. For example:
+
+```
+# c shell --enable-capture
+```
+
+* Run at least one command before you reference previous commands.
+* After you enable the capture, you can reference the previous output of a command that you ran. For example, to reference the last command, run:
+
+```
+# c -w 1 "what_is_this"
+```
+
+* To reference the second to last command, run:
+
+```
+# c -w 2 "what_is_this"
+```
+
+* To stop terminal capture, press the following keys on your keyboard:
+
+```
+$ Press Ctrl + D
+```
+
+==== **5. Checking history interactions**
 
 Access your conversation history with the command-line assistant powered by RHEL Lightspeed.
 
@@ -217,31 +257,6 @@ Access your conversation history with the command-line assistant powered by RHEL
 # c history --clear
 ```
 
-==== **5. Capture terminal activity**
-
-The command-line assistant powered by RHEL Lightspeed has an optional feature that enables you to reference commands that you previously ran.
-
-* Enable the terminal capture for your current terminal session. For example:
-
-``` 
-# c shell --enable-capture
-```
-
-* Run at least one command before you reference previous commands.
-* After you enable the capture, you can reference the previous output of a command that you ran. For example, to reference the last command, run:
-
-``` 
-# c -w 1 "what_is_this"
-```
-
-* To reference the second to last command, run:
-
-``` 
-# c -w 2 "what_is_this"
-```
-
-* To stop terminal capture, press the following keys on your keyboard:
-
 === Way forward
 
 We highly encourage you to start using CLA as your goto helper with any RHEL queries or troubleshooting
@@ -255,3 +270,7 @@ To submit feedback, use the following email address: <cla-feedback@redhat.com>.
 
 === References 
   * link:https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/interacting_with_the_command-line_assistant_powered_by_rhel_lightspeed/index[Installing the command-line assistant powered by RHEL Lightspeed]
+
+=== Conclusion 
+
+We highly encourage you to use command line assistant powered by Red Hat Lightspeed as your daily runner, to save your time and use, manage RHEL more effectively. 
