@@ -184,18 +184,18 @@ On first terminal Send the prompt to the model
 [source,bash,role=execute,subs=attributes+]
 ----
 curl -s -X POST http://localhost:8000/v1/chat/completions \
-  -H “Content-Type: application/json” \
-  -d ‘{
-    “model”: “RedHatAI/gemma-3-1b-it-quantized.w8a8”,
-    “messages”: [
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "RedHatAI/gemma-3-1b-it-quantized.w8a8",
+    "messages": [
       {
-        “role”: “user”,
-        “content”: “Write me 5 to 10 paragraphs about RHEL”
+        "role": "user",
+        "content": "Write me 5 to 10 paragraphs about RHEL"
       }
     ],
-    “temperature”: 0.7,
-    “max_tokens”: 1500
-  }’ | jq
+    "temperature": 0.7,
+    "max_tokens": 1500
+  }' | jq
 ----
 
 Now on second terminal observe gpu activity again.
